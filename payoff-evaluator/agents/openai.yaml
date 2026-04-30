@@ -1,0 +1,7 @@
+interface:
+  display_name: "Payoff Evaluator"
+  short_description: "反附和地审查计划必要性与投入回报"
+  default_prompt: "Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？"
+
+policy:
+  allow_implicit_invocation: true
