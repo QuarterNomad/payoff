@@ -1,5 +1,19 @@
 # Payoff Evaluator Reference
 
+## Table of contents
+
+- [1. Decision routing](#1-decision-routing)
+- [2. The lenses](#2-the-lenses)
+- [3. quick exit](#3-quick-exit)
+- [4. Anti-sycophancy check](#4-anti-sycophancy-check)
+- [5. Burden of proof rules](#5-burden-of-proof-rules)
+- [6. Interview strategy](#6-interview-strategy)
+- [7. Route-specific question bank](#7-route-specific-question-bank)
+- [8. External counter-evidence search](#8-external-counter-evidence-search)
+- [9. Final decision template](#9-final-decision-template)
+
+For concrete phrasings and worked examples, read `references/examples.md`.
+
 ## 1. Decision routing
 
 Route the decision before asking a long chain of questions. This skill stays focused on one output: `必要` or `没必要`.
@@ -272,80 +286,3 @@ The earliest signal that should trigger a re-check or a stop.
 下一步行动：
 给一个小而可执行的动作。若结论是没必要，优先给低成本替代方案。
 ```
-
-## 10. Examples
-
-### Example: New computer
-
-User: "我想买一台新电脑，有没有必要？"
-
-Likely route:
-
-- `购买/支出`
-
-Good first question:
-
-```text
-先确认真实瓶颈。
-
-可多选：
-A. 工作或学习任务已经被性能、兼容性或稳定性拖慢
-B. 主要是续航、屏幕、便携或整体体验不满意
-C. 现在还能用，这次更多是在为未来需求或换新冲动做准备
-其他：请说明具体任务和每周大概损失多少时间或机会
-```
-
-Likely `必要` case:
-
-- Current machine blocks recurring work.
-- Loss is concrete and frequent.
-- Cheaper fixes are tried or impossible.
-- The upgrade directly removes the bottleneck.
-
-Likely `没必要` case:
-
-- The pain is vague.
-- The main reason is freshness, aesthetics, identity, or imagined future productivity.
-- The user has not tried cheaper fixes.
-
-### Example: Side project
-
-User: "我想花两个月做一个副业产品，值不值得？"
-
-Likely route:
-
-- `承诺型投入`
-
-Good first question:
-
-```text
-先别证明方案，先确认真实目标。
-
-可多选：
-A. 我已经看到明确需求，只是还没验证最小成交路径
-B. 我主要是想摆脱当前停滞感，想通过做项目找回推进感
-C. 我更像是在为“也许以后能用上”的机会提前搭基础设施
-其他：请直接说你想解决的结果，以及两个月后什么变化算成功
-```
-
-Then ask:
-
-- What is the smallest version that proves demand?
-- What exact maintenance burden comes with this?
-- If the product gets no users in 30 days, what will have been misjudged?
-- Are they willing to do the boring distribution work, not just the building?
-
-### Example: Small purchase
-
-User: "我想买一个 49 元的效率 app 会员，有必要吗？"
-
-Likely route:
-
-- `小而可逆`
-
-Possible `quick exit` response path:
-
-- Ask whether not buying it creates a real short-term loss.
-- Ask whether they can cancel or switch easily.
-- If both the downside and switching cost are tiny, do not over-analyze.
-- If the app mainly represents mood, identity, or procrastination-by-tooling, decide `没必要`.

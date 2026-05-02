@@ -26,9 +26,25 @@ cp -R payoff/payoff-evaluator ~/.codex/skills/
 
 ## Cursor（项目级 Skill）
 
-在本仓库内用 Cursor 打开项目时，Agent 会从 `.cursor/skills/payoff-evaluator/` 加载同一套流程（含 `references/evaluation-framework.md`）。无需再链到全局 `~/.cursor/skills/`；克隆本仓库即可在团队间共享。
+在本仓库内用 Cursor 打开项目时，Agent 会从 `.cursor/skills/payoff-evaluator/` 加载同一套流程（含 `references/evaluation-framework.md` 与 `references/examples.md`）。无需再链到全局 `~/.cursor/skills/`；克隆本仓库即可在团队间共享。
 
 若你改动了根目录下的 `payoff-evaluator/`，请同步更新 `.cursor/skills/payoff-evaluator/` 中对应文件，避免 Cursor 与 Codex 安装源脱节。
+
+仓库内提供了同步脚本：
+
+```bash
+python3 scripts/sync_skill_copies.py
+```
+
+它会把根目录下的 `payoff-evaluator/` 完整复制到 `.cursor/skills/payoff-evaluator/`。
+
+仓库内还提供了完整自检脚本：
+
+```bash
+python3 scripts/validate_skill_repo.py
+```
+
+它会依次执行同步、副本一致性测试、仓库单测，以及 `skill-creator` 的 `quick_validate.py`。
 
 ## 如何使用
 
@@ -118,14 +134,20 @@ payoff-evaluator/              # Codex 安装源（软链接/复制目标）
 ├── agents/
 │   └── openai.yaml
 └── references/
-    └── evaluation-framework.md
+    ├── evaluation-framework.md
+    └── examples.md
 
 .cursor/skills/payoff-evaluator/   # Cursor 项目级 Agent Skill（与上保持内容一致）
 ├── SKILL.md
 ├── agents/
 │   └── openai.yaml
 └── references/
-    └── evaluation-framework.md
+    ├── evaluation-framework.md
+    └── examples.md
+
+scripts/
+├── sync_skill_copies.py
+└── validate_skill_repo.py
 ```
 
 ## 更新

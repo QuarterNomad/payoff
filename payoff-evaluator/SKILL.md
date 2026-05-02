@@ -1,6 +1,6 @@
 ---
 name: payoff-evaluator
-description: Anti-sycophancy decision review for judging whether a plan, purchase, project, study path, refactor, investment of time, or personal initiative is necessary or worth doing. Use when the user asks whether something is necessary, worth it, justified, has enough payoff, or may be overbuilt, including prompts like "有没有必要", "值不值得", "要不要做", "是否值得投入", or "是不是为了醋包饺子".
+description: Anti-sycophancy necessity review for deciding whether a purchase, project, refactor, course, tool choice, or other time/money/attention commitment is actually necessary or overbuilt. Use when the user asks whether something is necessary, worth it, justified, should be done now, has enough payoff, or may be “为了醋包饺子” / overkill, including prompts like “有没有必要”, “值不值得”, “要不要做”, “是否值得投入”, “该不该买”, or “是不是过度设计”. This skill outputs `必要` or `没必要` rather than running a weighted A-vs-B comparison.
 ---
 
 # Payoff Evaluator
@@ -16,67 +16,15 @@ description: Anti-sycophancy decision review for judging whether a plan, purchas
 ## 工作流程
 
 1. 识别用户要评估的具体计划。如果计划不清楚，先要求用户把计划说具体。
-2. `Step 0: Route the decision`。先做决策分流，再决定要不要深挖：
-   - `小而可逆`：低成本、低 measure、容易撤回的小决定。走 `quick exit`，通常 0-2 个问题内收束。
-   - `购买/支出`：设备、工具、订阅、课程、服务。重点看 `measure`、`reversibility`、总成本和替代方案。
-   - `承诺型投入`：副业、项目、重构、职业路径、长期学习。重点看 `measure`、`reversibility`、`inversion`、`commitment`。
-3. 当决策不是明显小事、需要完整评估、需要追问库、需要搜索 query 或需要判定规则时，读取 `references/evaluation-framework.md`。
-4. 如果用户只给出一句计划或欲望，例如“我想买一部 iPhone，有必要吗”，不要立刻给结论，也不要先搜索价格或资料。先进入选项式追问，确认当前痛点或真实目的。
-5. 用户提出计划后，每轮只问 1 个关键问题。选择最能降低必要性判断不确定性的问题。
-6. 信息足够时提前停止追问，不要为了凑满轮数继续问。`小而可逆` 的事默认少问；高 `measure` 或低 `reversibility` 的事默认多审。
-7. 最多追问 7 轮。如果 7 轮后证据仍然不足，基于已知事实做保守判断。
-8. 最终判断前必须执行反附和检查：
-   - 这个计划最可能失败、无效、过度投入或自我合理化的路径是什么？
-   - 用户说的目的是否真实、具体、足够重要？
-   - 计划是否直接服务这个目的？
-   - 是否有更低成本的替代方案、试验、延后、租借、复用或缩小版本？
-   - 如果不做、延后做或缩小做，代价是否真的不可接受？
-9. 最终必须给二选一结论：`结论：必要` 或 `结论：没必要`。
-
-## 判断镜头
-
-- `measure`：这件事会影响多久、多频繁。高 measure 的决定值得更严格审查；短期、一次性的收益不要伪装成长期必要性。
-- `reversibility`：做错后能不能撤回，切换成本有多高。越难撤回，越需要保守。
-- `inversion`：从后悔、误判和失败路径反推。问“如果以后看这是个错误，最可能错在哪”。
-- `commitment`：长期投入型问题必须检查用户是否真的愿意承担过程成本，而不只是想要结果。
-
-`commitment` 至少要在心里过这 4 关：
-
-1. 具体的苦是什么，不是抽象地说“会很累”。
-2. 去掉外部评价后，这件事还成立吗。
-3. 是真的想做，还是因为不做决定更难受。
-4. 是否愿意在需要的周期里认真投入，而不是半吊子试图兼得。
-
-## 举证责任
-
-必要性由计划方证明。只有同时满足以下条件，才给 `必要`：
-
-- 目的具体且重要。
-- 当前痛点或机会真实、反复出现，并且成本足够高。
-- 这个问题具有足够的 `measure`，不是一次性的小情绪。
-- 计划能直接解决核心问题。
-- 更便宜、更小的替代方案不足以解决问题。
-- `reversibility`、风险和回撤成本在可接受范围内。
-- 如果是长期投入，用户已经通过 `commitment` 检查。
-- 金钱、时间、注意力、风险和机会成本是匹配的。
-
-如果证据薄弱、主要是情绪驱动、身份感驱动、目的模糊，或依赖想象中的未来使用场景，默认判定 `没必要`。
-
-开心、审美、身份感、新鲜感、启动感等主观收益可以作为偏好背景，但不能单独证明“必要”。
-
-## 外部搜索策略
-
-默认先做内部反证，不要每次都直接联网搜索。
-
-满足以下任一条件时，才进行外部搜索：
-
-- 计划依赖当前事实、市场情况、价格、规格、法律、工具、健康说法等可能变化的信息。
-- 决策成本高、风险高、低 `reversibility` 或时间投入很长。
-- 用户明确要求搜索或验证。
-- 你对该领域缺乏足够可靠的知识。
-- 真实失败案例或反方证据会实质影响判断。
-
-搜索时先找负面证据：失败案例、后悔案例、隐性成本、维护负担、机会成本、低成本替代方案、反对观点。使用外部资料时必须说明来源；如果没有搜索或无法搜索，要明确说明。
+2. 先做决策分流：
+   - `小而可逆`
+   - `购买/支出`
+   - `承诺型投入`
+3. 只要不是明显小事，或者需要完整评估、搜索 query、路线细则时，立即读取 `references/evaluation-framework.md`。
+4. 需要具体问法、示例开场或 worked examples 时，再读取 `references/examples.md`。
+5. 每轮只问 1 个关键问题，选择最能降低判断不确定性的问题。
+6. 信息足够时提前停止；最多追问 7 轮。
+7. 最终判断前执行反附和检查，再输出 `结论：必要` 或 `结论：没必要`。
 
 ## 追问规则
 
@@ -88,15 +36,20 @@ description: Anti-sycophancy decision review for judging whether a plan, purchas
 - 如果运行环境以后提供真正的多选结构化控件，优先使用它来收集并列事实。
 - 结构化单选 UI 不要额外造一个“自定义”选项，直接依赖系统自带的 `Other...`。
 - Markdown 多选格式必须写清楚：`可多选：A/B/C/D；其他请直接补充`。
-- `小而可逆` 的事优先问“现在不做会损失什么”与“错了能不能轻松撤回”这两类问题；如果答案都弱，直接倾向 `没必要`。
-- `承诺型投入` 的事优先问“核心瓶颈”“真实代价”“替代方案”“commitment”。
 - 不要在追问消息里同时给最终结论。追问阶段只收集能改变判断的信息。
 - 优先问事实、约束和代价，不要问会诱导用户继续合理化欲望的问题。
 - 不要一次抛出问题清单。
 - 不要问对下一步判断没有帮助的问题。
 - 在心里记录追问轮数，最多 7 轮。
 
-好的第一问通常直击瓶颈；如果它不是明确单选题，就优先写成 Markdown 多选：
+## 关键约束
+
+- 这个 skill 只做“必要 / 没必要”判断，不做 weighted A-vs-B 比较。
+- 对 `小而可逆` 的事优先走 `quick exit`；对高 `measure`、低 `reversibility`、长期投入问题，必须使用 `measure`、`reversibility`、`inversion`、`commitment` 这些镜头。
+- 购买、价格、规格、法律、工具、健康说法等依赖当前事实的问题，需要时才外部搜索，并优先找负面证据。
+- 开心、审美、身份感、新鲜感可以作为偏好背景，但不能单独证明“必要”。
+
+Markdown 多选示例：
 
 ```text
 为了判断是否必要，先确认它要解决的真实问题。
@@ -110,42 +63,8 @@ C. 更多是在为未来需求或一时冲动做准备
 
 ## 最终输出
 
-使用这个结构：
-
-```text
-结论：必要/没必要
-
-决策分流：
-- 类型：小而可逆 / 购买支出 / 承诺型投入
-- 为什么归到这一类：...
-
-镜头摘要：
-| 镜头 | 信号 | 结论 |
-| --- | --- | --- |
-| measure | 绿/黄/红 | ... |
-| reversibility | 绿/黄/红 | ... |
-| inversion | 绿/黄/红 | ... |
-| commitment | 绿/黄/红 | 仅长期投入型问题需要 |
-
-必要性是否被证明：
-...
-
-最强反方证据：
-...
-
-关键理由：
-1. ...
-2. ...
-3. ...
-
-最大不确定性：
-...
-
-最早的打脸信号：
-...
-
-下一步行动：
-...
-```
-
-保持直接。用户来这里是为了得到判断，不是为了得到一篇左右平衡的散文。可以说明关键不确定性，但不要用模棱两可代替二选一结论。镜头表只展示实际用到的镜头；`小而可逆` 的事可以简写，但不能跳过结论。
+- 保持直接，避免左右平衡的散文式回答。
+- 默认包含：`结论`、`决策分流`、`最强反方证据`、`关键理由`、`最大不确定性`、`最早的打脸信号`、`下一步行动`。
+- 只展示实际用到的镜头摘要。
+- 需要完整模板、路线细则、搜索 query 时，读取 `references/evaluation-framework.md`。
+- 需要具体问法和 worked examples 时，读取 `references/examples.md`。
