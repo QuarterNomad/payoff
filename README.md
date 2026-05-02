@@ -1,60 +1,48 @@
 # Payoff Evaluator
 
-`payoff-evaluator` 是一个 Codex skill，用来反附和地评估一件事、一个计划、一次购买或一段投入有没有必要。
+`payoff-evaluator` 是一个平台中立的 skill / reusable prompt 包，用来反附和地评估一件事、一个计划、一次购买或一段投入有没有必要。
 
 它的核心立场是：计划必须证明自己的必要性。模型不能默认附和用户，也不能替用户补理由。它会先做 `决策分流`，再用 `measure`、`reversibility`、`inversion`、`commitment` 这些镜头拆开判断，主动寻找反方证据、替代方案和失败路径，最后给出 `必要` 或 `没必要` 的二选一结论。
 
-## 快速安装
+这个仓库刻意保持平台中立，所以公开内容只保留真正给模型使用的 skill 本体和参考资料，不包含供应商专属元数据、测试目录或本地维护脚本。
 
-推荐用软链接安装，后续只需要 `git pull` 就能更新：
+## 适用平台
+
+只要平台支持下面任一方式，就可以使用这份 skill：
+
+- 可发现的 skill / agent / command 目录
+- 可复用的 system prompt / custom instruction / reusable prompt
+- 可按需追加参考文档作为上下文
+
+这意味着它可以被接入 Codex、Cursor、Claude，或其他支持类似能力的 agent 平台。
+
+## 快速接入
+
+如果你的平台支持“把一个目录当成 skill / prompt 包”加载，直接把 `payoff-evaluator/` 放到对应目录即可。
+
+推荐用软链接，后续更新更简单：
 
 ```bash
 git clone https://github.com/QuarterNomad/payoff.git
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)/payoff/payoff-evaluator" ~/.codex/skills/payoff-evaluator
+mkdir -p /path/to/your/skills
+ln -s "$(pwd)/payoff/payoff-evaluator" /path/to/your/skills/payoff-evaluator
 ```
 
-如果不想使用软链接，也可以复制 skill 目录：
+如果你的平台不支持目录式 skill，只支持一段可复用提示词：
 
-```bash
-git clone https://github.com/QuarterNomad/payoff.git
-mkdir -p ~/.codex/skills
-cp -R payoff/payoff-evaluator ~/.codex/skills/
-```
-
-安装后重启或刷新 Codex，使 skill 被重新发现。
-
-## Cursor（项目级 Skill）
-
-在本仓库内用 Cursor 打开项目时，Agent 会从 `.cursor/skills/payoff-evaluator/` 加载同一套流程（含 `references/evaluation-framework.md` 与 `references/examples.md`）。无需再链到全局 `~/.cursor/skills/`；克隆本仓库即可在团队间共享。
-
-若你改动了根目录下的 `payoff-evaluator/`，请同步更新 `.cursor/skills/payoff-evaluator/` 中对应文件，避免 Cursor 与 Codex 安装源脱节。
-
-仓库内提供了同步脚本：
-
-```bash
-python3 scripts/sync_skill_copies.py
-```
-
-它会把根目录下的 `payoff-evaluator/` 完整复制到 `.cursor/skills/payoff-evaluator/`。
-
-仓库内还提供了完整自检脚本：
-
-```bash
-python3 scripts/validate_skill_repo.py
-```
-
-它会依次执行同步、副本一致性测试、仓库单测，以及 `skill-creator` 的 `quick_validate.py`。
+1. 把 `payoff-evaluator/SKILL.md` 作为主提示词模板。
+2. 在需要时再附带 `payoff-evaluator/references/` 下的参考文档。
+3. 让模型按 `SKILL.md` 中写的规则决定什么时候读取额外 reference。
 
 ## 如何使用
 
-在 Codex 中直接调用：
+如果平台支持显式调用 skill，可以这样写：
 
 ```text
 Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 ```
 
-也可以用更自然的方式提问：
+如果平台不支持显式 skill 调用，直接自然语言提问也可以：
 
 ```text
 我想花两个月做一个副业产品，值不值得？
@@ -68,9 +56,9 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 - "我想报名一个课程，是否值得投入？"
 - "这个项目是不是为了醋包饺子？"
 
-## 升级后的判断结构
+## 判断结构
 
-这个 skill 现在保留“必要 / 没必要”的定位，但判断过程更稳：
+这个 skill 保留“必要 / 没必要”的定位，但判断过程更稳：
 
 1. `决策分流`
    - 先判断是 `小而可逆`、`购买/支出`，还是 `承诺型投入`。
@@ -91,9 +79,10 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 - 每轮只问一个关键问题，最多追问 7 轮。
 - 对 `小而可逆` 的事优先走 `quick exit`，通常 0-2 个问题就收束。
 - 如果不是明确的二选一、主因排序或最终确认题，默认按多选事实题处理。
-- 当前 Plan mode 的 `request_user_input` 只有单选加 `Other`，不支持多选，所以多选事实题默认使用 Markdown 多选格式。
-- 结构化单选 UI 只留给明确单选题；如果界面自动显示“推荐”标记，skill 会在题干里明确让用户忽略它。
-- 在结构化 UI 下不再额外伪造“自定义”选项，直接依赖系统自带的 `Other...`。
+- 如果平台提供真正的多选结构化输入，优先使用它。
+- 如果平台只有单选加 `Other`，那它只适合明确单选题；多选事实题改用 Markdown 多选格式。
+- 不额外伪造“自定义”选项，直接依赖平台原生的 `Other...` 即可。
+- 如果界面会自动显示“推荐”标记，题干里应明确让用户忽略它。
 - 最终必须给出 `结论：必要` 或 `结论：没必要`。
 
 ## 输出结构
@@ -129,41 +118,29 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 ## 目录结构
 
 ```text
-payoff-evaluator/              # Codex 安装源（软链接/复制目标）
+payoff-evaluator/
 ├── SKILL.md
-├── agents/
-│   └── openai.yaml
 └── references/
     ├── evaluation-framework.md
+    ├── interview-strategy.md
+    ├── search-strategy.md
     └── examples.md
-
-.cursor/skills/payoff-evaluator/   # Cursor 项目级 Agent Skill（与上保持内容一致）
-├── SKILL.md
-├── agents/
-│   └── openai.yaml
-└── references/
-    ├── evaluation-framework.md
-    └── examples.md
-
-scripts/
-├── sync_skill_copies.py
-└── validate_skill_repo.py
 ```
 
 ## 更新
 
-如果使用软链接安装：
+如果你是用软链接接入：
 
 ```bash
 cd payoff
 git pull
 ```
 
-如果使用复制安装：
+如果你是复制目录接入：
 
 ```bash
 cd payoff
 git pull
-rm -rf ~/.codex/skills/payoff-evaluator
-cp -R payoff-evaluator ~/.codex/skills/
+rm -rf /path/to/your/skills/payoff-evaluator
+cp -R payoff-evaluator /path/to/your/skills/
 ```

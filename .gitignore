@@ -2,4 +2,7 @@
 .superpowers/
 .agents/
 .cursor/
-
+/scripts/
+/tests/
+/repo-tools/
+/payoff-evaluator/agents/

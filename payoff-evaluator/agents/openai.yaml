@@ -1,7 +1,0 @@
-interface:
-  display_name: "Payoff Evaluator"
-  short_description: "反附和地判断购买、项目或投入是否真的必要"
-  default_prompt: "Use $payoff-evaluator to judge: 我想花两个月做一个副业产品，值不值得？"
-
-policy:
-  allow_implicit_invocation: true
