@@ -138,12 +138,16 @@ Every interview question should be offered as choices plus custom input, but cho
 
 Input mode rules:
 
-- Fact collection: if the environment supports unbiased multi-select, use it. If Plan mode only exposes `request_user_input` with single-select plus custom input, still prefer `request_user_input`: ask for the closest or current primary factor, explicitly tell the user to ignore the UI's recommended badge, and use follow-up turns to collect secondary factors.
+- Fact collection: if the question is not inherently single-choice, use multi-select.
 - Priority selection: use single-select. In Plan mode, prefer `request_user_input`.
 - Decision confirmation: use single-select only after enough facts are collected.
 - Free explanation: use custom input when options would distort the answer.
 
-If the environment provides a structured UI that supports multi-select without a recommendation, use it. If Plan mode only provides `request_user_input`, prefer that over plain Markdown: rewrite the question so the user picks the closest/current primary option and fills `Other` when needed. Use Markdown multi-select only when no structured UI is available.
+If the environment provides a structured UI that supports true multi-select without a recommendation, use it. If Plan mode only provides `request_user_input`, remember that it is single-select plus `Other`, not multi-select. In that environment:
+
+- use `request_user_input` only for genuinely single-choice questions
+- use Markdown multi-select for fact collection that can have multiple true answers
+- never add a fake "自定义" option because the structured UI already has `Other...`
 
 Multi-select format:
 
@@ -155,18 +159,17 @@ A. <meaningful option>
 B. <meaningful option>
 C. <meaningful option>
 D. <meaningful option if useful>
-自定义：<ask the user to type their own answer>
+其他：<ask the user to type their own answer>
 ```
 
 Single-select format:
 
 ```text
-请先选最接近的一项。忽略界面上的“推荐”标记，它只是 UI 限制；如果都不准确，直接填空。
+请先选最接近的一项。忽略界面上的“推荐”标记，它只是 UI 限制；如果都不准确，使用系统自带的 Other。
 
 A. <meaningful option>
 B. <meaningful option>
 C. <meaningful option>
-自定义：<ask the user to type their own answer>
 ```
 
 Do not include fake choices. The options should expose the decision pattern, not merely restate yes/no.
@@ -283,12 +286,13 @@ Likely route:
 Good first question:
 
 ```text
-先确认真实瓶颈。请先选最接近的一项；忽略界面上的“推荐”标记，它只是 UI 限制。如果都不准确，直接填空。
+先确认真实瓶颈。
 
+可多选：
 A. 工作或学习任务已经被性能、兼容性或稳定性拖慢
 B. 主要是续航、屏幕、便携或整体体验不满意
 C. 现在还能用，这次更多是在为未来需求或换新冲动做准备
-自定义：请说明具体任务和每周大概损失多少时间或机会
+其他：请说明具体任务和每周大概损失多少时间或机会
 ```
 
 Likely `必要` case:
@@ -315,12 +319,13 @@ Likely route:
 Good first question:
 
 ```text
-先别证明方案，先确认真实目标。请先选最接近的一项；忽略界面上的“推荐”标记，它只是 UI 限制。如果都不准确，直接填空。
+先别证明方案，先确认真实目标。
 
+可多选：
 A. 我已经看到明确需求，只是还没验证最小成交路径
 B. 我主要是想摆脱当前停滞感，想通过做项目找回推进感
 C. 我更像是在为“也许以后能用上”的机会提前搭基础设施
-自定义：请直接说你想解决的结果，以及两个月后什么变化算成功
+其他：请直接说你想解决的结果，以及两个月后什么变化算成功
 ```
 
 Then ask:

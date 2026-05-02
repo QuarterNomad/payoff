@@ -24,6 +24,12 @@ cp -R payoff/payoff-evaluator ~/.codex/skills/
 
 安装后重启或刷新 Codex，使 skill 被重新发现。
 
+## Cursor（项目级 Skill）
+
+在本仓库内用 Cursor 打开项目时，Agent 会从 `.cursor/skills/payoff-evaluator/` 加载同一套流程（含 `references/evaluation-framework.md`）。无需再链到全局 `~/.cursor/skills/`；克隆本仓库即可在团队间共享。
+
+若你改动了根目录下的 `payoff-evaluator/`，请同步更新 `.cursor/skills/payoff-evaluator/` 中对应文件，避免 Cursor 与 Codex 安装源脱节。
+
 ## 如何使用
 
 在 Codex 中直接调用：
@@ -68,10 +74,10 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 
 - 每轮只问一个关键问题，最多追问 7 轮。
 - 对 `小而可逆` 的事优先走 `quick exit`，通常 0-2 个问题就收束。
-- 优先使用可点击选项加自定义输入；在 Plan mode 等支持 `request_user_input` 的环境里，默认走结构化控件。
-- 如果界面自动显示“推荐”标记，skill 会在题干里明确让用户忽略它，并把问题写成“先选最接近的一项”或“先选当前最主要的一项”。
-- 原本需要多选的事实收集题，会拆成连续的单焦点问题，而不是退化成纯 Markdown 文本选项。
-- 只有在没有结构化控件时，才退化成 Markdown 选项。
+- 如果不是明确的二选一、主因排序或最终确认题，默认按多选事实题处理。
+- 当前 Plan mode 的 `request_user_input` 只有单选加 `Other`，不支持多选，所以多选事实题默认使用 Markdown 多选格式。
+- 结构化单选 UI 只留给明确单选题；如果界面自动显示“推荐”标记，skill 会在题干里明确让用户忽略它。
+- 在结构化 UI 下不再额外伪造“自定义”选项，直接依赖系统自带的 `Other...`。
 - 最终必须给出 `结论：必要` 或 `结论：没必要`。
 
 ## 输出结构
@@ -107,7 +113,14 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 ## 目录结构
 
 ```text
-payoff-evaluator/
+payoff-evaluator/              # Codex 安装源（软链接/复制目标）
+├── SKILL.md
+├── agents/
+│   └── openai.yaml
+└── references/
+    └── evaluation-framework.md
+
+.cursor/skills/payoff-evaluator/   # Cursor 项目级 Agent Skill（与上保持内容一致）
 ├── SKILL.md
 ├── agents/
 │   └── openai.yaml
