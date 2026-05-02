@@ -1,12 +1,32 @@
 # Payoff Evaluator
 
-`payoff-evaluator` 是一个平台中立的 skill / reusable prompt 包，用来反附和地评估一件事、一个计划、一次购买或一段投入有没有必要。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![linuxdo](https://img.shields.io/badge/linuxdo-skill-blue?style=flat)](https://linux.do)
 
-它的核心立场是：计划必须证明自己的必要性。模型不能默认附和用户，也不能替用户补理由。它会先做 `决策分流`，再用 `measure`、`reversibility`、`inversion`、`commitment` 这些镜头拆开判断，主动寻找反方证据、替代方案和失败路径，最后给出 `必要` 或 `没必要` 的二选一结论。
+**A platform-neutral skill / reusable prompt pack for anti-sycophancy necessity review.**
+
+`payoff-evaluator` 用来判断一件事、一个计划、一次购买或一段投入到底是不是“有必要”，而不是顺着用户的原始想法补理由。
+
+它的核心立场很简单：
+
+- 计划必须证明自己的必要性
+- 模型不能默认附和
+- 模型不能替用户把欲望包装成必要性
+- 最终必须收敛到 `结论：必要` 或 `结论：没必要`
 
 这个仓库刻意保持平台中立，所以公开内容只保留真正给模型使用的 skill 本体和参考资料，不包含供应商专属元数据、测试目录或本地维护脚本。
 
-## 适用平台
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| Anti-sycophancy review | 先找为什么可能没必要，而不是先替计划辩护 |
+| Necessity-only output | 只做 `必要 / 没必要` 判断，不做 weighted A-vs-B 比较 |
+| Decision routing | 先分流为 `小而可逆`、`购买/支出`、`承诺型投入` |
+| Layered references | 主规则在 `SKILL.md`，详细镜头、问法、搜索策略、例子按需读取 |
+| Cross-platform packaging | 可作为 skill 目录、custom instruction、system prompt 或 reusable prompt 使用 |
+
+## Supported Platforms
 
 只要平台支持下面任一方式，就可以使用这份 skill：
 
@@ -16,7 +36,9 @@
 
 这意味着它可以被接入 Codex、Cursor、Claude，或其他支持类似能力的 agent 平台。
 
-## 快速接入
+## Installation
+
+### 方式一：作为目录式 skill 接入
 
 如果你的平台支持“把一个目录当成 skill / prompt 包”加载，直接把 `payoff-evaluator/` 放到对应目录即可。
 
@@ -28,13 +50,15 @@ mkdir -p /path/to/your/skills
 ln -s "$(pwd)/payoff/payoff-evaluator" /path/to/your/skills/payoff-evaluator
 ```
 
+### 方式二：作为可复用提示词接入
+
 如果你的平台不支持目录式 skill，只支持一段可复用提示词：
 
 1. 把 `payoff-evaluator/SKILL.md` 作为主提示词模板。
 2. 在需要时再附带 `payoff-evaluator/references/` 下的参考文档。
 3. 让模型按 `SKILL.md` 中写的规则决定什么时候读取额外 reference。
 
-## 如何使用
+## Usage
 
 如果平台支持显式调用 skill，可以这样写：
 
@@ -56,7 +80,7 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 - "我想报名一个课程，是否值得投入？"
 - "这个项目是不是为了醋包饺子？"
 
-## 判断结构
+## Evaluation Workflow
 
 这个 skill 保留“必要 / 没必要”的定位，但判断过程更稳：
 
@@ -74,7 +98,7 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 5. `强制结论`
    - 最终仍然只给 `结论：必要` 或 `结论：没必要`。
 
-## 交互方式
+## Interaction Rules
 
 - 每轮只问一个关键问题，最多追问 7 轮。
 - 对 `小而可逆` 的事优先走 `quick exit`，通常 0-2 个问题就收束。
@@ -85,9 +109,9 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 - 如果界面会自动显示“推荐”标记，题干里应明确让用户忽略它。
 - 最终必须给出 `结论：必要` 或 `结论：没必要`。
 
-## 输出结构
+## Output Shape
 
-默认输出会包含这些部分：
+默认输出包含这些部分：
 
 - `结论：必要 / 没必要`
 - `决策分流`
@@ -98,36 +122,31 @@ Use $payoff-evaluator to judge: 我想买一台新电脑，有没有必要？
 - `最早的打脸信号`
 - `下一步行动`
 
-## 为什么有这个项目
-
-大模型很擅长获取信息和整合信息，但在个人决策里容易变成附和型助手：用户提出一个计划，模型会顺着计划补理由，最后给出模棱两可或偏支持的回答。
-
-这个 skill 的目标是反过来做：先要求计划证明自己的必要性。它会主动寻找反方证据、低成本替代方案、机会成本和失败路径，帮助用户避免把真实目的包装成一个过大的计划，也就是避免“为了醋包饺子”。
-
-## 行为原则
-
-- 不默认支持用户的原始计划。
-- 必要性由计划方证明。
-- 先分流，再决定要不要深挖。
-- 判断前必须执行反附和检查。
-- 高 `measure` 和低 `reversibility` 的决策值得更重的审查。
-- 对长期投入型问题，必须过 `commitment` 检查。
-- 外部搜索不是每次强制联网，而是先内部反证，必要时搜索反面案例。
-- 开心、审美、身份感、新鲜感可以作为偏好背景，但不能单独证明“必要”。
-
-## 目录结构
+## Repository Structure
 
 ```text
-payoff-evaluator/
-├── SKILL.md
-└── references/
-    ├── evaluation-framework.md
-    ├── interview-strategy.md
-    ├── search-strategy.md
-    └── examples.md
+payoff/
+├── payoff-evaluator/
+│   ├── SKILL.md
+│   └── references/
+│       ├── evaluation-framework.md
+│       ├── interview-strategy.md
+│       ├── search-strategy.md
+│       └── examples.md
+├── LICENSE
+└── README.md
 ```
 
-## 更新
+## Boundaries
+
+这个仓库当前不包含：
+
+- 供应商专属 `agents/openai.yaml` 之类的接口元数据
+- 公共仓库里的测试目录和维护脚本
+- 平台绑定的安装器、登录器或本地状态管理
+- 用于 A-vs-B 方案权重比较的决策框架
+
+## Update
 
 如果你是用软链接接入：
 
@@ -144,3 +163,11 @@ git pull
 rm -rf /path/to/your/skills/payoff-evaluator
 cp -R payoff-evaluator /path/to/your/skills/
 ```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+本项目支持 [LINUX DO](https://linux.do) 社区
